@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H.I.A — AI Receptionist, 24/7</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --noir: #0C0C0E;
+    --blanc: #F5F2EE;
+    --or: #C9A96E;
+    --or-light: #E8D5B0;
+    --gris: #1A1A1E;
+    --gris-mid: #2A2A30;
+    --texte-dim: #888890;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--noir); color: var(--blanc); font-family: 'DM Sans', sans-serif; font-weight: 300; line-height: 1.6; overflow-x: hidden; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 48px; display: flex; align-items: center; justify-content: space-between; background: rgba(12,12,14,0.88); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(201,169,110,0.1); }
+  .logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; letter-spacing: 0.08em; color: var(--or); text-decoration: none; }
+  .logo span { color: var(--blanc); font-size: 11px; font-family: 'DM Sans', sans-serif; font-weight: 300; letter-spacing: 0.2em; display: block; text-transform: uppercase; margin-top: -4px; opacity: 0.6; }
+  nav a.nav-cta { font-size: 13px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--noir); background: var(--or); padding: 10px 24px; text-decoration: none; transition: background 0.2s; }
+  nav a.nav-cta:hover { background: var(--or-light); }
+
+  .hero { min-height: 100vh; display: flex; align-items: center; position: relative; padding: 120px 48px 80px; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -200px; right: -200px; width: 700px; height: 700px; background: radial-gradient(circle, rgba(201,169,110,0.07) 0%, transparent 65%); pointer-events: none; }
+  .hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,169,110,0.3), transparent); }
+  .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; max-width: 1200px; margin: 0 auto; width: 100%; }
+  .hero-tag { display: inline-block; font-size: 10px; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--or); border: 1px solid rgba(201,169,110,0.3); padding: 6px 14px; margin-bottom: 28px; }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(40px, 5vw, 66px); font-weight: 900; line-height: 1.05; color: var(--blanc); margin-bottom: 24px; }
+  .hero h1 em { font-style: italic; color: var(--or); }
+  .hero-sub { font-size: 17px; color: var(--texte-dim); line-height: 1.7; max-width: 440px; margin-bottom: 40px; }
+  .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+
+  .btn-primary { font-size: 13px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--noir); background: var(--or); padding: 14px 32px; text-decoration: none; transition: all 0.2s; display: inline-block; }
+  .btn-primary:hover { background: var(--or-light); transform: translateY(-1px); }
+  .btn-secondary { font-size: 13px; font-weight: 400; letter-spacing: 0.08em; color: var(--or); border: 1px solid rgba(201,169,110,0.4); padding: 14px 32px; text-decoration: none; transition: all 0.2s; display: inline-block; }
+  .btn-secondary:hover { border-color: var(--or); background: rgba(201,169,110,0.05); }
+
+  /* DEMO CARD */
+  .demo-card { background: var(--gris); border: 1px solid rgba(201,169,110,0.15); padding: 40px; position: relative; }
+  .demo-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--or), transparent); }
+  .demo-label { font-size: 10px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--or); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .pulse-dot { width: 6px; height: 6px; background: var(--or); border-radius: 50%; animation: pulse 2s infinite; flex-shrink: 0; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .demo-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 8px; color: var(--blanc); }
+  .demo-desc { font-size: 14px; color: var(--texte-dim); margin-bottom: 28px; line-height: 1.6; }
+
+  /* AUDIO PLAYER */
+  .player-wrap { background: var(--noir); border: 1px solid rgba(201,169,110,0.1); padding: 24px; }
+  .scenario-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--texte-dim); margin-bottom: 12px; font-weight: 400; }
+  .scenarios { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .scenario-btn { font-size: 11px; font-weight: 400; letter-spacing: 0.08em; color: var(--texte-dim); border: 1px solid rgba(201,169,110,0.2); background: transparent; padding: 7px 14px; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+  .scenario-btn:hover, .scenario-btn.active { color: var(--or); border-color: var(--or); background: rgba(201,169,110,0.05); }
+  .waveform { display: flex; align-items: center; gap: 3px; height: 44px; margin-bottom: 20px; }
+  .bar { flex: 1; background: rgba(201,169,110,0.18); border-radius: 1px; transition: background 0.15s; min-height: 4px; }
+  .bar.played { background: rgba(201,169,110,0.55); }
+  .bar.active { background: var(--or); }
+  .controls { display: flex; align-items: center; gap: 16px; }
+  .play-btn { width: 44px; height: 44px; border: 1px solid var(--or); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.2s; }
+  .play-btn:hover { background: rgba(201,169,110,0.1); }
+  .play-icon { width: 0; height: 0; border-top: 9px solid transparent; border-bottom: 9px solid transparent; border-left: 15px solid var(--or); margin-left: 3px; }
+  .pause-icon { display: flex; gap: 4px; }
+  .pause-bar { width: 4px; height: 16px; background: var(--or); border-radius: 1px; }
+  .time-info { flex: 1; }
+  .time-bar-track { height: 2px; background: rgba(201,169,110,0.15); position: relative; cursor: pointer; margin-bottom: 8px; }
+  .time-bar-fill { height: 100%; background: var(--or); width: 0%; transition: width 0.1s linear; }
+  .times { display: flex; justify-content: space-between; font-size: 11px; color: var(--texte-dim); font-weight: 300; }
+  .player-cta-note { font-size: 12px; color: var(--texte-dim); margin-top: 20px; font-weight: 300; line-height: 1.6; border-top: 1px solid rgba(201,169,110,0.08); padding-top: 16px; }
+  .player-cta-note a { color: var(--or); text-decoration: none; }
+  .player-cta-note a:hover { text-decoration: underline; }
+
+  /* STATS */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 32px; border: 1px solid rgba(201,169,110,0.1); }
+  .stat { padding: 20px; text-align: center; background: var(--noir); }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--or); display: block; }
+  .stat-label { font-size: 11px; color: var(--texte-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+
+  section { padding: 100px 48px; max-width: 1200px; margin: 0 auto; }
+  .section-tag { font-size: 10px; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--or); margin-bottom: 16px; display: block; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(32px, 3.5vw, 48px); font-weight: 900; line-height: 1.1; margin-bottom: 48px; }
+
+  .compare-section { padding: 100px 48px; background: var(--gris); border-top: 1px solid rgba(201,169,110,0.1); border-bottom: 1px solid rgba(201,169,110,0.1); }
+  .compare-inner { max-width: 1200px; margin: 0 auto; }
+  .compare-table { width: 100%; border-collapse: collapse; margin-top: 48px; }
+  .compare-table th { padding: 16px 24px; text-align: left; font-size: 11px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; border-bottom: 1px solid rgba(201,169,110,0.2); }
+  .compare-table th:last-child { color: var(--or); background: rgba(201,169,110,0.05); }
+  .compare-table td { padding: 18px 24px; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--texte-dim); }
+  .compare-table td:first-child { color: var(--blanc); font-weight: 400; }
+  .compare-table td:last-child { color: var(--or); font-weight: 500; background: rgba(201,169,110,0.03); }
+
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 48px; }
+  .feature { background: var(--gris); padding: 36px 32px; transition: background 0.2s; }
+  .feature:hover { background: var(--gris-mid); }
+  .feature-num { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 900; color: rgba(201,169,110,0.15); line-height: 1; margin-bottom: 16px; }
+  .feature-title { font-size: 16px; font-weight: 500; color: var(--blanc); margin-bottom: 10px; }
+  .feature-desc { font-size: 13px; color: var(--texte-dim); line-height: 1.6; }
+
+  .process-steps { display: flex; flex-direction: column; margin-top: 48px; }
+  .step { display: grid; grid-template-columns: 80px 1fr; gap: 32px; align-items: start; padding: 32px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .step:last-child { border-bottom: none; }
+  .step-num { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 900; color: var(--or); line-height: 1; opacity: 0.6; }
+  .step-content h3 { font-size: 18px; font-weight: 500; color: var(--blanc); margin-bottom: 8px; padding-top: 8px; }
+  .step-content p { font-size: 14px; color: var(--texte-dim); line-height: 1.7; }
+
+  /* PRICING */
+  .pricing-section { padding: 100px 48px; background: var(--gris); border-top: 1px solid rgba(201,169,110,0.1); border-bottom: 1px solid rgba(201,169,110,0.1); }
+  .pricing-inner { max-width: 1200px; margin: 0 auto; }
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 48px; }
+  .pricing-card { background: var(--noir); padding: 40px 36px; position: relative; display: flex; flex-direction: column; }
+  .pricing-card.featured { background: var(--gris-mid); border-top: 2px solid var(--or); }
+  .pricing-badge { display: inline-block; font-size: 9px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--noir); background: var(--or); padding: 4px 12px; margin-bottom: 20px; }
+  .pricing-name { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--texte-dim); margin-bottom: 12px; }
+  .pricing-price { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 900; color: var(--blanc); line-height: 1; margin-bottom: 4px; }
+  .pricing-price span { font-family: 'DM Sans', sans-serif; font-size: 20px; font-weight: 300; color: var(--texte-dim); }
+  .pricing-period { font-size: 12px; color: var(--texte-dim); margin-bottom: 32px; }
+  .pricing-divider { height: 1px; background: rgba(201,169,110,0.1); margin-bottom: 28px; }
+  .pricing-features { list-style: none; margin-bottom: 36px; flex: 1; }
+  .pricing-features li { font-size: 13px; color: var(--texte-dim); padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; gap: 10px; align-items: flex-start; }
+  .pricing-features li::before { content: '—'; color: var(--or); flex-shrink: 0; opacity: 0.7; }
+  .pricing-features li.highlight { color: var(--blanc); }
+  .pricing-features li.highlight::before { opacity: 1; }
+
+  .cta-section { padding: 120px 48px; text-align: center; position: relative; overflow: hidden; }
+  .cta-section::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(201,169,110,0.06) 0%, transparent 65%); pointer-events: none; }
+  .cta-inner { position: relative; max-width: 680px; margin: 0 auto; }
+  .cta-section h2 { font-family: 'Playfair Display', serif; font-size: clamp(36px, 4vw, 56px); font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+  .cta-section h2 em { font-style: italic; color: var(--or); }
+  .cta-section p { font-size: 16px; color: var(--texte-dim); margin-bottom: 40px; line-height: 1.7; }
+
+  footer { padding: 32px 48px; border-top: 1px solid rgba(201,169,110,0.1); display: flex; justify-content: space-between; align-items: center; }
+  footer p { font-size: 12px; color: var(--texte-dim); }
+  footer a { font-size: 12px; color: var(--or); text-decoration: none; }
+
+  .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(201,169,110,0.2), transparent); margin: 0 48px; }
+
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .hero { padding: 100px 24px 60px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+    section { padding: 60px 24px; }
+    .compare-section, .pricing-section { padding: 60px 24px; }
+    .features-grid, .pricing-grid { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+    .cta-section { padding: 80px 24px; }
+    .divider { margin: 0 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">H.I.A<span>Hadjeris Intelligence & Automation</span></a>
+  <a href="#book" class="nav-cta">Book a Call</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-tag">AI Receptionist · Available 24/7</div>
+      <h1>Your front desk,<br><em>automated.</em></h1>
+      <p class="hero-sub">An intelligent voice agent answers your calls, qualifies requests and books appointments directly into your calendar — any time, without interruption.</p>
+      <div class="hero-ctas">
+        <a href="#demo" class="btn-primary">Listen to the demo</a>
+        <a href="#book" class="btn-secondary">Get started in 15 min</a>
+      </div>
+    </div>
+
+    <div>
+      <div class="demo-card" id="demo">
+        <div class="demo-label"><div class="pulse-dot"></div>Live Demo</div>
+        <div class="demo-title">Hear your future receptionist</div>
+        <p class="demo-desc">Three real scenarios — appointment booking, cancellation, FAQ. Hear how the agent responds naturally.</p>
+        <div class="player-wrap">
+          <div class="waveform" id="waveform"></div>
+          <div class="controls">
+            <button class="play-btn" id="playBtn" onclick="togglePlay()" aria-label="Play / Pause">
+              <div class="play-icon" id="playIcon"></div>
+            </button>
+            <div class="time-info">
+              <div class="time-bar-track" onclick="seek(event)"><div class="time-bar-fill" id="progress"></div></div>
+              <div class="times"><span id="currentTime">0:00</span><span id="duration">—</span></div>
+            </div>
+          </div>
+          <div class="player-cta-note">Want to hear your own agent? <a href="https://cal.com/ismael-hadjeris-xlae7u/15min" target="_blank">Book 15 minutes →</a></div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span class="stat-num">24/7</span><span class="stat-label">Availability</span></div>
+        <div class="stat"><span class="stat-num">&lt;3s</span><span class="stat-label">Response time</span></div>
+        <div class="stat"><span class="stat-num">−85%</span><span class="stat-label">Avg. cost vs. staff</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="compare-section">
+  <div class="compare-inner">
+    <span class="section-tag">Why H.I.A</span>
+    <h2 class="section-title">What your front desk staff<br>simply cannot do.</h2>
+    <table class="compare-table">
+      <thead><tr><th>Criteria</th><th>Human receptionist</th><th>H.I.A Voice Agent</th></tr></thead>
+      <tbody>
+        <tr><td>Availability</td><td>Business hours only</td><td>24/7 — including weekends</td></tr>
+        <tr><td>Monthly cost</td><td>$4,000+ all-in</td><td>From $299/month</td></tr>
+        <tr><td>Simultaneous calls</td><td>One at a time</td><td>Up to 30 — like having 30 receptionists</td></tr>
+        <tr><td>Sick days & vacations</td><td>Yes — cover required</td><td>None. Ever.</td></tr>
+        <tr><td>Appointment booking</td><td>Manual entry</td><td>Auto-synced to your calendar</td></tr>
+        <tr><td>Time to deploy</td><td>4–8 weeks to hire</td><td>48 to 72 hours</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<section>
+  <span class="section-tag">What the agent does</span>
+  <h2 class="section-title">A complete receptionist,<br>not just a chatbot.</h2>
+  <div class="features-grid">
+    <div class="feature"><div class="feature-num">01</div><div class="feature-title">Answers inbound calls</div><p class="feature-desc">Your agent picks up in under 3 seconds, introduces itself with your practice name, and opens a natural conversation.</p></div>
+    <div class="feature"><div class="feature-num">02</div><div class="feature-title">Qualifies each request</div><p class="feature-desc">It identifies the reason for the call — new patient, urgent, follow-up, question — and routes to the right action without human effort.</p></div>
+    <div class="feature"><div class="feature-num">03</div><div class="feature-title">Books appointments</div><p class="feature-desc">It checks real-time availability and creates the appointment directly in your calendar. No double entry, no delay.</p></div>
+    <div class="feature"><div class="feature-num">04</div><div class="feature-title">Reschedules & cancels</div><p class="feature-desc">Patients can call back to move or cancel. The agent finds their booking and updates the calendar automatically.</p></div>
+    <div class="feature"><div class="feature-num">05</div><div class="feature-title">Handles FAQ</div><p class="feature-desc">Hours, address, rates, which practitioner to see — the agent knows your practice inside out and answers without bothering you.</p></div>
+    <div class="feature"><div class="feature-num">06</div><div class="feature-title">Transfers when needed</div><p class="feature-desc">For complex situations or real emergencies, the agent transfers the call to the right person instantly.</p></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <span class="section-tag">How it works</span>
+  <h2 class="section-title">Live in<br>48 to 72 hours.</h2>
+  <div class="process-steps">
+    <div class="step"><div class="step-num">1</div><div class="step-content"><h3>15-minute discovery call</h3><p>We learn about your practice — your hours, your team, your use cases and what you want the agent to know. No technical jargon, just your workflow.</p></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-content"><h3>Custom configuration</h3><p>We set up the agent with your information, connect your calendar (Cal.com, Calendly, or Google Calendar) and calibrate the voice and tone to match your brand.</p></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-content"><h3>You test before we go live</h3><p>You call the agent yourself before deployment. We adjust until it's perfect. No commitment until you approve it.</p></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-content"><h3>Live on your number</h3><p>The agent is active on your phone line. We stay available for adjustments. No annual contract — monthly, cancel anytime.</p></div></div>
+  </div>
+</section>
+
+<div class="pricing-section">
+  <div class="pricing-inner">
+    <span class="section-tag">Pricing</span>
+    <h2 class="section-title">Straightforward pricing.<br>No surprises.</h2>
+    <div class="pricing-grid">
+
+      <!-- SOLO -->
+      <div class="pricing-card">
+        <div class="pricing-name">Solo</div>
+        <div class="pricing-price">$299<span>/mo</span></div>
+        <div class="pricing-period">No setup fee · Cancel anytime</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li class="highlight">10 simultaneous AI assistants</li>
+          <li class="highlight">~100 calls/month included</li>
+          <li class="highlight">1 number configured</li>
+          <li>Full reception flow</li>
+          <li>Calendar integration</li>
+          <li>Call summaries by email</li>
+        </ul>
+        <a href="https://cal.com/ismael-hadjeris-xlae7u/15min" target="_blank" class="btn-secondary" style="width:100%;text-align:center;">Get started</a>
+      </div>
+
+      <!-- PRO -->
+      <div class="pricing-card featured">
+        <div class="pricing-name">Pro</div>
+        <div class="pricing-price">$599<span>/mo</span></div>
+        <div class="pricing-period">No setup fee · Cancel anytime</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li class="highlight">20 simultaneous AI assistants</li>
+          <li class="highlight">~415 calls/month included</li>
+          <li class="highlight">Up to 3 numbers configured</li>
+          <li>Full reception flow</li>
+          <li>Calendar integration</li>
+          <li>Call summaries by email</li>
+          <li>Priority support</li>
+        </ul>
+        <a href="https://cal.com/ismael-hadjeris-xlae7u/15min" target="_blank" class="btn-primary" style="width:100%;text-align:center;">Get started</a>
+      </div>
+
+      <!-- ELITE -->
+      <div class="pricing-card">
+        <div class="pricing-name">Elite</div>
+        <div class="pricing-price">$999<span>/mo</span></div>
+        <div class="pricing-period">No setup fee · Cancel anytime</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li class="highlight">30 simultaneous AI assistants</li>
+          <li class="highlight">~1,250 calls/month included</li>
+          <li class="highlight">Up to 8 numbers configured</li>
+          <li>Full reception flow</li>
+          <li>Calendar integration</li>
+          <li>Call summaries by email</li>
+          <li>Priority support</li>
+        </ul>
+        <a href="https://cal.com/ismael-hadjeris-xlae7u/15min" target="_blank" class="btn-secondary" style="width:100%;text-align:center;">Let's talk</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="cta-section" id="book">
+  <div class="cta-inner">
+    <span class="section-tag" style="display:block;margin-bottom:16px;">Take action</span>
+    <h2>You're missing calls<br><em>right now.</em></h2>
+    <p>Every unanswered call is a patient booking with your competitor. A 15-minute call is all it takes to see if H.I.A is the right fit for your practice.</p>
+    <a href="https://cal.com/ismael-hadjeris-xlae7u/15min" target="_blank" class="btn-primary" style="font-size:14px;padding:16px 40px;">Book your free 15-minute call</a>
+    <p style="margin-top:20px;font-size:12px;color:var(--texte-dim);">No commitment · Reply within 24h · Demo included</p>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 H.I.A — Hadjeris Intelligence & Automation</p>
+  <div style="display:flex;gap:24px;align-items:center;">
+    <a href="/legal.html" style="font-size:12px;color:var(--texte-dim);text-decoration:none;opacity:0.6;">Mentions légales & CGV</a>
+    <a href="mailto:ismael@hia-solutions.fr">ismael@hia-solutions.fr</a>
+  </div>
+</footer>
+
+<audio id="audioPlayer"></audio>
+
+<script>
+/* ── AUDIO PLAYER ── */
+const NUM_BARS = 48;
+const heights = Array.from({length:NUM_BARS},(_,i)=>15+Math.abs(Math.sin(i*0.7)*22)+Math.abs(Math.sin(i*0.31)*10));
+let isPlaying = false;
+const audio = document.getElementById('audioPlayer');
+audio.src = 'https://res.cloudinary.com/qqxekj2b/video/upload/v1779675596/audio_demo_ysstn3.mp3';
+
+function renderBars(p){
+  const played=Math.floor((p||0)*NUM_BARS);
+  document.getElementById('waveform').innerHTML=heights.map((h,i)=>{
+    const h2=Math.max(4,Math.min(38,h));
+    const cls=i<played?'bar played':(i===played?'bar active':'bar');
+    return `<div class="${cls}" style="height:${h2}px"></div>`;
+  }).join('');
+}
+renderBars(0);
+document.getElementById('duration').textContent='0:45';
+
+function togglePlay(){ isPlaying?audio.pause():audio.play().catch(()=>{}); }
+function setIcon(p){
+  const el=document.getElementById('playIcon'); if(!el)return;
+  el.outerHTML=p?'<div class="pause-icon" id="playIcon"><div class="pause-bar"></div><div class="pause-bar"></div></div>':'<div class="play-icon" id="playIcon"></div>';
+}
+audio.addEventListener('play',()=>{isPlaying=true;setIcon(true);});
+audio.addEventListener('pause',()=>{isPlaying=false;setIcon(false);});
+audio.addEventListener('ended',()=>{isPlaying=false;setIcon(false);renderBars(0);document.getElementById('progress').style.width='0%';document.getElementById('currentTime').textContent='0:00';});
+audio.addEventListener('timeupdate',()=>{
+  if(!audio.duration)return;
+  const pct=audio.currentTime/audio.duration;
+  document.getElementById('progress').style.width=(pct*100)+'%'; renderBars(pct);
+  const m=Math.floor(audio.currentTime/60),s=Math.floor(audio.currentTime%60).toString().padStart(2,'0');
+  document.getElementById('currentTime').textContent=m+':'+s;
+});
+audio.addEventListener('loadedmetadata',()=>{
+  const m=Math.floor(audio.duration/60),s=Math.floor(audio.duration%60).toString().padStart(2,'0');
+  document.getElementById('duration').textContent=m+':'+s;
+});
+function seek(e){if(!audio.duration)return;const r=e.currentTarget.getBoundingClientRect();audio.currentTime=((e.clientX-r.left)/r.width)*audio.duration;}
+
+</script>
+
+</body>
+</html>
